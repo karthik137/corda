@@ -267,6 +267,7 @@ class ReconnectingCordaRPCOps private constructor(
             val nextInterval = retryInterval * rpcConfiguration.connectionRetryIntervalMultiplier
             return establishConnectionWithRetry(nextInterval, nextRoundRobinIndex, remainingRetries)
         }
+
         override val proxy: CordaRPCOps
             get() = current.proxy
         override val serverProtocolVersion
@@ -336,7 +337,7 @@ class ReconnectingCordaRPCOps private constructor(
                         }
                         else -> {
                             log.warn("Failed to perform operation ${method.name}.", e)
-                            throw e
+                            throw e.targetException
                         }
                     }
                     lastException = e.targetException

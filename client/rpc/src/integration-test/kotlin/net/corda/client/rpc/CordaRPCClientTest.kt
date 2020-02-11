@@ -1,5 +1,6 @@
 package net.corda.client.rpc
 
+import net.corda.core.CordaRuntimeException
 import net.corda.core.context.Actor
 import net.corda.core.context.AuthServiceId
 import net.corda.core.context.InvocationContext
@@ -30,6 +31,7 @@ import net.corda.finance.workflows.getCashBalance
 import net.corda.finance.workflows.getCashBalances
 import net.corda.node.internal.NodeWithInfo
 import net.corda.node.services.Permissions.Companion.all
+import net.corda.nodeapi.exceptions.DuplicateAttachmentException
 import net.corda.testing.common.internal.checkNotOnClasspath
 import net.corda.testing.core.ALICE_NAME
 import net.corda.testing.core.BOB_NAME
@@ -278,7 +280,8 @@ class CordaRPCClientTest : NodeBasedTest(listOf("net.corda.finance"), notaries =
                 rpc.uploadAttachment(inputJar1)
                 rpc.uploadAttachment(inputJar2)
             }
-        }
+        }.isInstanceOf(CordaRuntimeException::class.java)
+                .hasMessageContaining(DuplicateAttachmentException::class.java.name)
 
         assertThat(disconnects).isEqualTo(0)
         assertThat(reconnects).isEqualTo(0)
